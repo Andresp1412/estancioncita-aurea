@@ -37,13 +37,29 @@
   a{ color:var(--brand-ink); }
   ::selection{ background:var(--brand-soft); }
 
-  /* ---------- Masthead / hero ---------- */
-  .skyline{ width:100%; height:70px; display:block; }
-  .masthead{
-    background:var(--paper); border-bottom:3px double var(--border);
-    margin:0 -20px 0; padding:22px 20px 0;
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+  @media (prefers-reduced-motion: no-preference){
+    .veredicto{ animation:fadeUp .55s cubic-bezier(.2,.8,.2,1) both; }
+    .veredicto:nth-child(1){ animation-delay:.02s; }
+    .veredicto:nth-child(2){ animation-delay:.1s; }
+    .veredicto:nth-child(3){ animation-delay:.18s; }
   }
-  .masthead-inner{ max-width:1160px; margin:0 auto; }
+
+  /* ---------- Masthead / hero ---------- */
+  .skyline{ width:100%; height:96px; display:block; overflow:visible; }
+  .masthead{
+    background:
+      radial-gradient(480px 220px at 18% -20%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 70%),
+      var(--paper);
+    border-bottom:1px solid var(--border);
+    margin:0 -20px 0; padding:22px 20px 0; position:relative;
+  }
+  .masthead::after{
+    content:""; position:absolute; left:0; right:0; top:0; height:2px;
+    background:linear-gradient(90deg, transparent, var(--brand), var(--rain), var(--frost), transparent);
+    opacity:.55;
+  }
+  .masthead-inner{ max-width:1160px; margin:0 auto; position:relative; }
   .kicker{
     display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; justify-content:space-between;
     font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
@@ -54,8 +70,8 @@
     display:flex; flex-wrap:wrap; gap:16px 28px; align-items:flex-end; justify-content:space-between;
     padding-bottom:18px;
   }
-  header.top .titles h1{ font-size:clamp(30px,4.4vw,44px); font-weight:700; letter-spacing:-0.01em; }
-  header.top .titles .sub{ margin:8px 0 0; color:var(--ink-dim); font-size:14.5px; max-width:58ch; font-style:italic; font-family:var(--font-display); }
+  header.top .titles h1{ font-size:clamp(32px,5vw,50px); font-weight:700; letter-spacing:-0.015em; }
+  header.top .titles .sub{ margin:10px 0 0; color:var(--ink-dim); font-size:15px; max-width:58ch; font-style:italic; font-family:var(--font-display); }
   .status-pill{
     display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
     border-radius:999px; font-size:13.5px; font-weight:500; white-space:nowrap;
@@ -88,8 +104,15 @@
   .veredicto.v-rain{ --accent-line:var(--rain); }
   .veredicto.v-frost{ --accent-line:var(--frost); }
   .veredicto.v-sun{ --accent-line:var(--sun); }
+  .veredicto{ transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+  .veredicto:hover{ transform:translateY(-3px); border-color:var(--accent-line); }
   .veredicto .icon-row{ display:flex; align-items:center; justify-content:space-between; }
-  .veredicto svg.icon{ width:34px; height:34px; flex:none; }
+  .icon-chip{
+    width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--accent-line, var(--brand)) 16%, transparent);
+    flex:none;
+  }
+  .veredicto svg.icon{ width:24px; height:24px; flex:none; }
   .veredicto .pregunta{ font-size:13px; color:var(--ink-dim); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
   .veredicto .respuesta{ font-family:var(--font-display); font-size:23px; font-weight:600; line-height:1.15; }
   .veredicto .badge{ align-self:flex-start; font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:999px; letter-spacing:.02em; }
@@ -171,9 +194,17 @@
 
 <div class="masthead">
   <div class="masthead-inner">
-    <svg class="skyline" viewBox="0 0 1160 70" preserveAspectRatio="none" aria-hidden="true">
-      <polygon points="0,70 0,40 90,10 180,34 260,6 340,30 430,2 520,26 610,4 700,32 790,8 880,28 970,2 1060,24 1160,6 1160,70" fill="var(--surface-2)"></polygon>
-      <polygon points="0,70 0,55 120,32 230,50 330,20 440,44 560,14 660,38 760,18 870,42 980,20 1080,40 1160,26 1160,70" fill="var(--border)" opacity="0.65"></polygon>
+    <svg class="skyline" viewBox="0 0 1160 96" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
+          <stop id="orbGlowStop" offset="0%" stop-color="#D9A54B" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#D9A54B" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle id="orbGlow" cx="580" cy="30" r="34" fill="url(#orbGlow)"></circle>
+      <circle id="orbCore" cx="580" cy="30" r="7" fill="#D9A54B"></circle>
+      <polygon points="0,96 0,58 90,28 180,52 260,24 340,48 430,20 520,44 610,22 700,50 790,26 880,46 970,20 1060,42 1160,24 1160,96" fill="var(--surface-2)"></polygon>
+      <polygon points="0,96 0,78 120,54 230,72 330,42 440,66 560,36 660,60 760,40 870,64 980,42 1080,62 1160,48 1160,96" fill="var(--border)" opacity="0.65"></polygon>
     </svg>
     <div class="kicker">
       <span><span class="place">Duitama, Boyacá</span> · 5.8277° N, 73.0251° O · ~2.590 msnm</span>
@@ -204,7 +235,7 @@
     <div class="grid respuestas">
       <div class="veredicto v-rain">
         <div class="icon-row">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--rain)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15.5a4 4 0 0 1 .7-7.94 5 5 0 0 1 9.6.44A3.5 3.5 0 0 1 17 15.5H7Z"/><path d="M8 18.5v1.2M12 18.5v2M16 18.5v1.2"/></svg>
+          <span class="icon-chip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--rain)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15.5a4 4 0 0 1 .7-7.94 5 5 0 0 1 9.6.44A3.5 3.5 0 0 1 17 15.5H7Z"/><path d="M8 18.5v1.2M12 18.5v2M16 18.5v1.2"/></svg></span>
           <span class="badge" id="badgeLluvia">—</span>
         </div>
         <div class="pregunta">¿Va a llover?</div>
@@ -216,7 +247,7 @@
 
       <div class="veredicto v-frost">
         <div class="icon-row">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--frost)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11"/><path d="M12 2 9.8 4.2M12 2l2.2 2.2M12 22l-2.2-2.2M12 22l2.2-2.2"/></svg>
+          <span class="icon-chip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--frost)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11"/><path d="M12 2 9.8 4.2M12 2l2.2 2.2M12 22l-2.2-2.2M12 22l2.2-2.2"/></svg></span>
           <span class="badge" id="badgeHelada">—</span>
         </div>
         <div class="pregunta">¿Hay riesgo de helada?</div>
@@ -228,7 +259,7 @@
 
       <div class="veredicto v-sun">
         <div class="icon-row">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--sun)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>
+          <span class="icon-chip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--sun)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg></span>
           <span class="badge" id="badgeFv">—</span>
         </div>
         <div class="pregunta">¿Cuánta energía solar hay?</div>
@@ -594,6 +625,25 @@ function pintarFechaHoy(){
   el.textContent = hoy.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
 }
 
+// El sol/luna sobre la silueta de montañas se ubica según la hora local de
+// quien mira la página (no la hora de la estación) — un detalle decorativo
+// de "almanaque vivo", no una medición.
+function pintarOrbita(){
+  const hora = new Date().getHours() + new Date().getMinutes()/60;
+  const esDia = hora >= 6 && hora < 18;
+  // Mapea 6am->0 y 6pm->1 (arco diurno) o 6pm->0 y 6am->1 (arco nocturno).
+  const frac = esDia ? (hora-6)/12 : ((hora<6 ? hora+24 : hora)-18)/12;
+  const x = 60 + frac*1040;
+  const y = 78 - Math.sin(frac*Math.PI)*58;
+  const color = esDia ? '#D9A54B' : '#CFE0EA';
+  const core = document.getElementById('orbCore');
+  const glowStop = document.getElementById('orbGlowStop');
+  const glow = document.getElementById('orbGlow');
+  if(core){ core.setAttribute('cx', x); core.setAttribute('cy', y); core.setAttribute('fill', color); }
+  if(glow){ glow.setAttribute('cx', x); glow.setAttribute('cy', y); glow.setAttribute('r', esDia?34:22); }
+  if(glowStop){ glowStop.setAttribute('stop-color', color); }
+}
+
 // Sitio estático (GitHub Pages, sin backend): el propio navegador de quien
 // mira la página llama DIRECTO a la API de AmbientWeather (no hay servidor
 // intermedio, no hay tarea programada, no depende de nada externo). Por eso
@@ -645,6 +695,7 @@ async function cargarDatos(){
 
 async function boot(){
   pintarFechaHoy();
+  try{ pintarOrbita(); }catch(e){ console.warn('orbita', e); }
   // Texto y badges no dependen de Chart.js: se pintan primero para que la
   // página muestre datos reales aunque la librería de gráficas falle en cargar.
   try{ renderTablaMetricas(); }catch(e){ console.warn('tabla', e); }
