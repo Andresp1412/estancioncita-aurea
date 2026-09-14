@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estancioncita Aurea</title>
+<meta name="description" content="Almanaque vivo de la estación Ambient Weather WS-2902 en Duitama, Boyacá: lluvia, heladas y generación fotovoltaica traducidas a decisiones prácticas de finca, con IA.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#EFF2EA; --surface:#FFFFFF; --surface-2:#E5EADD; --paper:#F7F8F2;
+    --ink:#232A22; --ink-dim:#5B6555; --border:#D7DDC7;
+    --brand:#B87C22; --brand-soft:#F3E3C2; --brand-ink:#5C3F14;
+    --rain:#3A5E82; --rain-soft:#DCE6EE;
+    --frost:#3F8792; --frost-soft:#DCEEF0;
+    --sun:#C96A22; --sun-soft:#F6E0CB;
+    --danger:#AE3A2E; --danger-soft:#F5DCD6;
+    --ok:#4F7A3E; --ok-soft:#E1EAD6;
+    --shadow: 0 1px 2px rgba(30,36,26,.07), 0 10px 26px -14px rgba(30,36,26,.28);
+    --font-display:'Spectral', Georgia, serif;
+    --font-body:'Work Sans', system-ui, sans-serif;
+    --font-mono:'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141A12; --surface:#1D2418; --surface-2:#232C1C; --paper:#1A2016;
+      --ink:#EAEEDE; --ink-dim:#9DA890; --border:#37402C;
+      --brand:#E3B15C; --brand-soft:#3B2C13; --brand-ink:#F4D9A4;
+      --rain:#8AB0D2; --rain-soft:#1E2D3B;
+      --frost:#8FCCD3; --frost-soft:#173035;
+      --sun:#E68A4C; --sun-soft:#3A2412;
+      --danger:#E28A79; --danger-soft:#3B231D;
+      --ok:#9AC383; --ok-soft:#22301A;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141A12; --surface:#1D2418; --surface-2:#232C1C; --paper:#1A2016;
+    --ink:#EAEEDE; --ink-dim:#9DA890; --border:#37402C;
+    --brand:#E3B15C; --brand-soft:#3B2C13; --brand-ink:#F4D9A4;
+    --rain:#8AB0D2; --rain-soft:#1E2D3B;
+    --frost:#8FCCD3; --frost-soft:#173035;
+    --sun:#E68A4C; --sun-soft:#3A2412;
+    --danger:#E28A79; --danger-soft:#3B231D;
+    --ok:#9AC383; --ok-soft:#22301A;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 28px -14px rgba(0,0,0,.55);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ background:var(--bg); }
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body);
+    padding-inline:20px; padding-block:0 64px;
+  }
+  .wrap{ max-width:1160px; margin:0 auto; }
+  h1,h2,h3{ font-family:var(--font-display); text-wrap:balance; margin:0; }
+  .tabular{ font-variant-numeric:tabular-nums; }
+  .mono{ font-family:var(--font-mono); }
+  a{ color:var(--brand-ink); }
+  ::selection{ background:var(--brand-soft); }
+
+  /* ---------- Masthead / hero ---------- */
+  .skyline{ width:100%; height:70px; display:block; }
+  .masthead{
+    background:var(--paper); border-bottom:3px double var(--border);
+    margin:0 -20px 0; padding:22px 20px 0;
+  }
+  .masthead-inner{ max-width:1160px; margin:0 auto; }
+  .kicker{
+    display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; justify-content:space-between;
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-dim); border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:16px;
+  }
+  .kicker span.place{ color:var(--brand-ink); font-weight:600; }
+  header.top{
+    display:flex; flex-wrap:wrap; gap:16px 28px; align-items:flex-end; justify-content:space-between;
+    padding-bottom:18px;
+  }
+  header.top .titles h1{ font-size:clamp(30px,4.4vw,44px); font-weight:700; letter-spacing:-0.01em; }
+  header.top .titles .sub{ margin:8px 0 0; color:var(--ink-dim); font-size:14.5px; max-width:58ch; font-style:italic; font-family:var(--font-display); }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+    border-radius:999px; font-size:13.5px; font-weight:500; white-space:nowrap;
+    border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow);
+  }
+  .status-pill .dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .dot.on{ background:var(--ok); box-shadow:0 0 0 3px var(--ok-soft); }
+  .dot.off{ background:var(--danger); box-shadow:0 0 0 3px var(--danger-soft); }
+  .status-meta{ margin-top:8px; font-size:12.5px; color:var(--ink-dim); text-align:right; }
+
+  section{ margin-top:40px; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .section-head h2{ font-size:22px; font-weight:600; }
+  .section-head .kick{ font-family:var(--font-mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--brand-ink); display:block; margin-bottom:4px; }
+  .section-head .tag{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-dim); border:1px solid var(--border); border-radius:6px; padding:3px 8px; white-space:nowrap;
+  }
+  .lede{ color:var(--ink-dim); font-size:14px; max-width:75ch; margin:-6px 0 18px; line-height:1.55; }
+
+  /* ---------- Respuestas (hero verdict cards) ---------- */
+  .grid.respuestas{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:920px){ .grid.respuestas{ grid-template-columns:1fr; } }
+  .veredicto{
+    background:var(--surface); border:1px solid var(--border); border-radius:18px;
+    padding:22px 22px 20px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .veredicto::before{ content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--accent-line, var(--border)); }
+  .veredicto.v-rain{ --accent-line:var(--rain); }
+  .veredicto.v-frost{ --accent-line:var(--frost); }
+  .veredicto.v-sun{ --accent-line:var(--sun); }
+  .veredicto .icon-row{ display:flex; align-items:center; justify-content:space-between; }
+  .veredicto svg.icon{ width:34px; height:34px; flex:none; }
+  .veredicto .pregunta{ font-size:13px; color:var(--ink-dim); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+  .veredicto .respuesta{ font-family:var(--font-display); font-size:23px; font-weight:600; line-height:1.15; }
+  .veredicto .badge{ align-self:flex-start; font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:999px; letter-spacing:.02em; }
+  .badge.ok{ background:var(--ok-soft); color:var(--ok); }
+  .badge.warn{ background:var(--sun-soft); color:var(--sun); }
+  .badge.danger{ background:var(--danger-soft); color:var(--danger); }
+  .badge.info{ background:var(--rain-soft); color:var(--rain); }
+  .veredicto .ventana{ font-size:13px; line-height:1.5; color:var(--ink); }
+  .veredicto .ventana strong{ color:var(--ink); }
+  .veredicto .meter{ height:7px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin:2px 0; }
+  .veredicto .meter > i{ display:block; height:100%; border-radius:99px; background:var(--accent-line); }
+  .veredicto .foot-note{ font-size:11.5px; color:var(--ink-dim); border-top:1px dashed var(--border); padding-top:8px; margin-top:auto; }
+
+  /* ---------- Recomendaciones ---------- */
+  .grid.recos{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:920px){ .grid.recos{ grid-template-columns:1fr; } }
+  .reco{ background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; gap:12px; align-items:flex-start; }
+  .reco svg{ width:22px; height:22px; flex:none; margin-top:2px; color:var(--brand-ink); }
+  .reco h4{ font-family:var(--font-body); font-size:13.5px; font-weight:700; margin:0 0 4px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-dim); }
+  .reco p{ margin:0; font-size:13.8px; line-height:1.5; }
+
+  /* ---------- Sensores en vivo ---------- */
+  .grid{ display:grid; gap:14px; }
+  .grid.sensors{ grid-template-columns:repeat(5,1fr); }
+  .grid.modules{ grid-template-columns:repeat(3,1fr); }
+  .grid.illus-charts{ grid-template-columns:1.1fr .9fr; }
+  @media (max-width:900px){
+    .grid.sensors{ grid-template-columns:repeat(2,1fr); }
+    .grid.modules{ grid-template-columns:1fr; }
+    .grid.illus-charts{ grid-template-columns:1fr; }
+  }
+  @media (max-width:460px){ .grid.sensors{ grid-template-columns:1fr 1fr; } }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:16px 16px 14px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:8px; min-width:0;
+  }
+  .card .label{ font-size:12px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.05em; }
+  .card .value{ font-family:var(--font-mono); font-size:27px; font-weight:500; line-height:1; }
+  .card .value small{ font-size:14px; color:var(--ink-dim); font-weight:400; margin-left:2px;}
+  /* Chart.js necesita que el CONTENEDOR del canvas tenga altura fija en CSS
+     (no heredada del contenido) — si no, canvas y contenedor se miden el uno
+     al otro en un ciclo y la página crece sola en cada actualización. */
+  .spark-wrap{ position:relative; width:100%; height:40px; }
+
+  .module-card{ position:relative; overflow:hidden; }
+  .module-card h3{ font-size:16px; font-weight:600; }
+  .module-card .big{ font-family:var(--font-mono); font-size:25px; }
+  .module-card p.explain{ font-size:12.8px; color:var(--ink-dim); line-height:1.45; margin:0; }
+  .module-card .formula{ font-family:var(--font-mono); font-size:11px; color:var(--ink-dim); background:var(--surface-2); border-radius:6px; padding:6px 8px; }
+
+  .illustrative{ background:var(--surface-2); border:1px dashed var(--border); border-radius:16px; padding:20px; }
+  .illustrative .section-head .tag{ background:var(--surface); }
+  .chart-box{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .chart-box h4{ font-family:var(--font-body); font-size:13.5px; font-weight:600; margin:0 0 8px; }
+  .chart-wrap{ position:relative; width:100%; height:260px; }
+  canvas{ max-width:100%; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .table-wrap{ overflow-x:auto; }
+  th,td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  th{ font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-dim); font-weight:600; }
+  td.mono{ font-family:var(--font-mono); }
+  tr.best td{ color:var(--ok); font-weight:600; }
+
+  .callout{ background:var(--brand-soft); border:1px solid var(--border); border-radius:14px; padding:16px 20px; display:flex; gap:14px; align-items:flex-start; }
+  .callout svg{ width:26px; height:26px; flex:none; color:var(--brand-ink); margin-top:2px; }
+  .callout h4{ font-family:var(--font-display); font-size:15px; margin:0 0 4px; color:var(--brand-ink); }
+  .callout p{ margin:0; font-size:13.5px; line-height:1.55; color:var(--ink); }
+
+  footer{ border-top:1px solid var(--border); padding-top:18px; margin-top:44px; color:var(--ink-dim); font-size:12.5px; line-height:1.65; }
+  footer strong{ color:var(--ink); }
+  footer .cols{ display:grid; grid-template-columns:2fr 1fr; gap:24px; }
+  @media (max-width:700px){ footer .cols{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <svg class="skyline" viewBox="0 0 1160 70" preserveAspectRatio="none" aria-hidden="true">
+      <polygon points="0,70 0,40 90,10 180,34 260,6 340,30 430,2 520,26 610,4 700,32 790,8 880,28 970,2 1060,24 1160,6 1160,70" fill="var(--surface-2)"></polygon>
+      <polygon points="0,70 0,55 120,32 230,50 330,20 440,44 560,14 660,38 760,18 870,42 980,20 1080,40 1160,26 1160,70" fill="var(--border)" opacity="0.65"></polygon>
+    </svg>
+    <div class="kicker">
+      <span><span class="place">Duitama, Boyacá</span> · 5.8277° N, 73.0251° O · ~2.590 msnm</span>
+      <span id="fechaHoy">—</span>
+    </div>
+    <header class="top">
+      <div class="titles">
+        <h1>Estancioncita Aurea</h1>
+        <p class="sub">Un almanaque vivo del altiplano: la estación Ambient Weather WS-2902 y tres módulos de IA leyendo el clima para el riego, el cuidado de los cultivos y la energía solar.</p>
+      </div>
+      <div>
+        <span class="status-pill" id="statusPill"><span class="dot off" id="statusDot"></span><span id="statusText">cargando…</span></span>
+        <div class="status-meta" id="statusMeta">&nbsp;</div>
+      </div>
+    </header>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="sec-respuestas">
+    <div class="section-head">
+      <div><span class="kick">Lo esencial de hoy</span><h2>¿Qué necesito saber ahora mismo?</h2></div>
+      <span class="tag">estimado a partir de la última lectura</span>
+    </div>
+    <p class="lede">Tres preguntas que cualquiera en la finca se hace al salir de casa. Las respuestas combinan la lectura actual de la estación con reglas simples inspiradas en los módulos de IA del proyecto — no son un pronóstico oficial, son una guía rápida mientras se acumulan semanas de datos reales.</p>
+
+    <div class="grid respuestas">
+      <div class="veredicto v-rain">
+        <div class="icon-row">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--rain)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15.5a4 4 0 0 1 .7-7.94 5 5 0 0 1 9.6.44A3.5 3.5 0 0 1 17 15.5H7Z"/><path d="M8 18.5v1.2M12 18.5v2M16 18.5v1.2"/></svg>
+          <span class="badge" id="badgeLluvia">—</span>
+        </div>
+        <div class="pregunta">¿Va a llover?</div>
+        <div class="respuesta" id="respLluvia">—</div>
+        <div class="meter"><i id="meterLluvia" style="width:0%"></i></div>
+        <div class="ventana" id="ventanaLluvia">—</div>
+        <div class="foot-note">Regla: humedad alta + presión cayendo → más probabilidad. No sustituye el pronóstico del IDEAM.</div>
+      </div>
+
+      <div class="veredicto v-frost">
+        <div class="icon-row">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--frost)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11"/><path d="M12 2 9.8 4.2M12 2l2.2 2.2M12 22l-2.2-2.2M12 22l2.2-2.2"/></svg>
+          <span class="badge" id="badgeHelada">—</span>
+        </div>
+        <div class="pregunta">¿Hay riesgo de helada?</div>
+        <div class="respuesta" id="respHelada">—</div>
+        <div class="meter"><i id="meterHelada" style="width:0%; background:var(--frost);"></i></div>
+        <div class="ventana" id="ventanaHelada">—</div>
+        <div class="foot-note">Regla: temperatura baja + noche/madrugada + humedad baja → cielo despejado que enfría rápido.</div>
+      </div>
+
+      <div class="veredicto v-sun">
+        <div class="icon-row">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--sun)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>
+          <span class="badge" id="badgeFv">—</span>
+        </div>
+        <div class="pregunta">¿Cuánta energía solar hay?</div>
+        <div class="respuesta" id="respFv">—</div>
+        <div class="meter"><i id="meterFv" style="width:0%; background:var(--sun);"></i></div>
+        <div class="ventana" id="ventanaFv">—</div>
+        <div class="foot-note">Fórmula física de panel FV, sobre un sistema de referencia de 1 kWp (tamaño típico de vivienda rural).</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-recos">
+    <div class="section-head">
+      <div><span class="kick">De la lectura a la acción</span><h2>Recomendaciones para la finca</h2></div>
+    </div>
+    <div class="grid recos">
+      <div class="reco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 3.5 5.5 6.8 5.5 9.8a5.5 5.5 0 1 1-11 0C6.5 9.8 9 6.5 12 3Z"/></svg>
+        <div><h4>Riego</h4><p id="recoRiego">—</p></div>
+      </div>
+      <div class="reco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 4 8.5 9 9 5-.5 9-4 9-9V7l-9-5Z"/></svg>
+        <div><h4>Protección de cultivos</h4><p id="recoCultivo">—</p></div>
+      </div>
+      <div class="reco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+        <div><h4>Uso de energía</h4><p id="recoEnergia">—</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-vivo">
+    <div class="section-head">
+      <div><span class="kick">La estación, ahora mismo</span><h2>Datos en vivo</h2></div>
+      <span class="tag" id="fuenteTag">estación WS-2902 — datos reales</span>
+    </div>
+    <div class="grid sensors">
+      <div class="card"><div class="label">Temperatura</div><div class="value tabular" id="vTemp">—</div><div class="spark-wrap"><canvas id="spTemp"></canvas></div></div>
+      <div class="card"><div class="label">Humedad</div><div class="value tabular" id="vHum">—</div><div class="spark-wrap"><canvas id="spHum"></canvas></div></div>
+      <div class="card"><div class="label">Presión</div><div class="value tabular" id="vPres">—</div><div class="spark-wrap"><canvas id="spPres"></canvas></div></div>
+      <div class="card"><div class="label">Radiación solar</div><div class="value tabular" id="vRad">—</div><div class="spark-wrap"><canvas id="spRad"></canvas></div></div>
+      <div class="card"><div class="label">Generación FV estimada</div><div class="value tabular" id="vPv">—</div><div class="spark-wrap"><canvas id="spPv"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="sec-modulos">
+    <div class="section-head">
+      <div><span class="kick">Cómo se calculó lo de arriba</span><h2>Los 3 módulos de IA, en detalle</h2></div>
+      <span class="tag">heurística en vivo, no el modelo entrenado corriendo en el navegador</span>
+    </div>
+    <div class="grid modules">
+      <div class="card module-card">
+        <h3>Riesgo de lluvia (próxima hora)</h3>
+        <div class="big tabular" id="valLluvia">—</div>
+        <p class="explain">Combina el nivel de humedad actual con la tendencia de presión de las últimas lecturas: presión cayendo + humedad alta = más probabilidad de lluvia. Inspirado en las variables que más pesaron en el Random Forest entrenado con datos simulados (ver panel ilustrativo).</p>
+        <div class="formula">score = f(humedad, Δpresión)</div>
+      </div>
+      <div class="card module-card">
+        <h3>Riesgo de helada</h3>
+        <div class="big tabular" id="valHelada">—</div>
+        <p class="explain">Alerta si la temperatura, en horas de la madrugada/noche (9pm–7am), está cerca o por debajo de 0–5°C — el rango en que el enfriamiento radiativo nocturno (cielo despejado, aire seco) puede dañar cultivos sensibles como papa recién sembrada u hortalizas.</p>
+        <div class="formula">alto: T&lt;0°C · medio: T&lt;5°C y de noche</div>
+      </div>
+      <div class="card module-card">
+        <h3>Generación fotovoltaica</h3>
+        <div class="big tabular" id="valFv">—</div>
+        <p class="explain">Estimación física directa (no requiere entrenamiento) para un sistema de referencia de 1 kWp, a partir de la irradiancia y temperatura medidas ahora mismo — la misma fórmula usada para generar el target del Módulo 2.</p>
+        <div class="formula">P = 1kWp·(G/1000)·[1&minus;0.004·(Tcelda&minus;25)]</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="illustrative" id="sec-ilustrativo">
+    <div class="section-head">
+      <div><span class="kick">Mientras se acumulan semanas de datos reales</span><h2>Panel ilustrativo — clima simulado</h2></div>
+      <span class="tag">NO son mediciones reales</span>
+    </div>
+    <p class="lede" style="margin-top:-4px;">
+      La estación solo transmitió unas horas de historial real el 26 de agosto de 2026. Para mostrar cómo se comportarán los 3 módulos con semanas de datos, esta sección usa 60 días de clima simulado tipo altiplano boyacense (misma latitud y altura de la estación, ciclo diario y régimen de lluvia de convección declarados en el código fuente). Las métricas de los modelos entrenados con esos datos están en la tabla de abajo.
+    </p>
+    <div class="grid illus-charts" style="margin-bottom:16px;">
+      <div class="chart-box"><h4>Ciclo diario típico (promedio de 60 días simulados)</h4><div class="chart-wrap"><canvas id="chartPerfil"></canvas></div></div>
+      <div class="chart-box"><h4>Temperatura y lluvia diaria — 60 días simulados</h4><div class="chart-wrap"><canvas id="chartDiario"></canvas></div></div>
+    </div>
+    <div class="table-wrap">
+      <table id="tablaMetricas"></table>
+    </div>
+  </section>
+
+  <section id="sec-callout">
+    <div class="callout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a7 7 0 0 0-4 12.7V18a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 3Z"/><path d="M10 22h4"/></svg>
+      <div>
+        <h4>¿Sabías que…?</h4>
+        <p>En el altiplano de Boyacá las heladas por enfriamiento radiativo son más frecuentes en las temporadas secas (diciembre–febrero y junio–agosto), cuando el cielo despejado deja escapar el calor del suelo durante la noche. Una técnica real usada en fincas de la región es el <strong>riego por aspersión durante el evento de helada</strong>: el calor que libera el agua al congelarse mantiene el tejido de la planta cerca de 0°C. Requiere equipo y cronometraje adecuados — antes de aplicarla, conviene validarlo con un asistente técnico agropecuario.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="cols">
+      <div>
+        <strong>Real vs. ilustrativo:</strong> la sección "Datos en vivo" y las respuestas de arriba consultan la API de AmbientWeather directamente desde este navegador (sin servidor intermedio); si la estación está desconectada seguirán mostrando su última lectura real, con la fecha de esa lectura siempre visible. El panel gris de abajo es siempre simulado, para fines de demostración metodológica. Las "respuestas" y "recomendaciones" son reglas simples de apoyo a la decisión, no un pronóstico oficial ni asesoría técnica personalizada.
+      </div>
+      <div>
+        Proyecto <strong>GRIDSE / AUREA</strong> — UPTC Seccional Duitama.<br>
+        Sistema inteligente de predicción meteorológica y generación fotovoltaica con estación Ambient Weather WS-2902.
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const REAL_SEED = [{"fecha": "2026-08-26T13:01:00", "temp_c": 22.0, "humedad_pct": 46.0, "presion_hpa": 1012.9, "radiacion_wm2": 194.8, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T13:06:00", "temp_c": 21.5, "humedad_pct": 48.0, "presion_hpa": 1012.5, "radiacion_wm2": 259.1, "lluvia_mm_hr": 22.8}, {"fecha": "2026-08-26T13:10:00", "temp_c": 21.0, "humedad_pct": 48.0, "presion_hpa": 1012.6, "radiacion_wm2": 293.5, "lluvia_mm_hr": 33.6}, {"fecha": "2026-08-26T13:15:00", "temp_c": 20.8, "humedad_pct": 53.0, "presion_hpa": 1012.4, "radiacion_wm2": 312.0, "lluvia_mm_hr": 33.6}, {"fecha": "2026-08-26T13:20:00", "temp_c": 21.9, "humedad_pct": 46.0, "presion_hpa": 1012.4, "radiacion_wm2": 346.0, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:27:00", "temp_c": 20.5, "humedad_pct": 50.0, "presion_hpa": 1013.2, "radiacion_wm2": 1.0, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:30:00", "temp_c": 20.6, "humedad_pct": 49.0, "presion_hpa": 1013.5, "radiacion_wm2": 1.6, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:36:00", "temp_c": 20.6, "humedad_pct": 50.0, "presion_hpa": 1013.2, "radiacion_wm2": 1.5, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:42:00", "temp_c": 20.6, "humedad_pct": 50.0, "presion_hpa": 1013.3, "radiacion_wm2": 1.2, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:45:00", "temp_c": 20.5, "humedad_pct": 50.0, "presion_hpa": 1013.4, "radiacion_wm2": 1.2, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:50:00", "temp_c": 20.5, "humedad_pct": 49.0, "presion_hpa": 1013.2, "radiacion_wm2": 1.8, "lluvia_mm_hr": 0.0}, {"fecha": "2026-08-26T16:55:00", "temp_c": 20.4, "humedad_pct": 50.0, "presion_hpa": 1013.5, "radiacion_wm2": 1.2, "lluvia_mm_hr": 0.0}];
+
+const SIM = {"perfil_horario": {"hora": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "temp_c": [7.07, 5.91, 5.29, 4.92, 5.25, 5.94, 7.06, 8.58, 10.39, 12.31, 14.12, 15.89, 17.41, 18.57, 19.38, 19.61, 19.29, 18.64, 17.48, 15.93, 14.15, 12.25, 10.35, 8.62], "humedad_pct": [78.29, 79.71, 79.9, 80.19, 79.9, 79.93, 79.42, 76.99, 73.79, 69.98, 65.75, 62.09, 58.75, 55.94, 54.29, 53.86, 55.14, 58.03, 62.62, 68.13, 73.09, 76.66, 78.71, 78.55], "radiacion_wm2": [0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 12.4, 78.55, 191.99, 320.42, 449.66, 561.94, 638.32, 665.28, 636.15, 555.29, 431.9, 289.28, 143.65, 25.63, 0.65, 0.0, 0.0, 0.0]}, "serie_diaria": {"dia": ["2026-07-01", "2026-07-02", "2026-07-03", "2026-07-04", "2026-07-05", "2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09", "2026-07-10", "2026-07-11", "2026-07-12", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19", "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25", "2026-07-26", "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-01", "2026-08-02", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-29"], "temp_min": [-0.99, 6.75, 1.98, 0.99, 3.15, 5.66, 2.28, 5.02, 3.5, -0.28, 6.7, 5.06, 3.6, 5.55, 3.61, -1.32, -1.5, 1.98, 1.83, 3.36, -1.79, -0.9, -1.98, -0.86, 3.35, -0.15, -0.61, 5.38, -1.14, 0.71, 4.02, 6.71, 0.7, 1.7, 1.44, 5.24, -1.75, -0.02, 5.86, 1.87, 4.56, 3.19, 4.34, -0.55, 2.05, -0.66, 6.1, 6.7, 6.24, 4.09, 4.98, 5.51, 5.79, -0.83, 5.19, 2.61, -0.75, -1.02, 5.02, -0.02], "temp_media": [11.5, 15.28, 11.62, 10.35, 12.16, 14.38, 11.66, 13.63, 12.13, 9.44, 14.85, 12.99, 12.13, 13.5, 11.89, 8.86, 8.99, 11.4, 11.68, 12.35, 9.05, 9.14, 8.68, 9.36, 12.06, 9.09, 9.35, 13.68, 8.51, 10.83, 13.13, 15.31, 10.14, 10.4, 10.99, 13.63, 8.5, 9.79, 13.87, 11.09, 12.85, 11.94, 12.94, 9.32, 11.5, 8.75, 14.11, 15.03, 14.75, 12.32, 12.86, 13.71, 13.5, 8.62, 12.79, 11.09, 8.58, 8.72, 13.63, 9.68], "temp_max": [23.86, 24.62, 21.56, 19.55, 22.14, 21.65, 21.35, 22.14, 21.31, 20.51, 22.85, 21.94, 21.29, 21.24, 20.9, 18.71, 18.71, 21.05, 20.86, 20.68, 20.06, 19.86, 20.51, 20.4, 21.4, 19.15, 20.32, 22.16, 19.87, 21.75, 22.44, 22.11, 20.16, 19.9, 21.28, 21.68, 20.09, 21.57, 20.57, 20.29, 21.85, 21.5, 21.19, 20.18, 20.83, 19.35, 21.94, 22.71, 22.53, 21.13, 20.55, 21.99, 21.15, 19.28, 21.19, 20.51, 18.72, 19.24, 22.13, 20.05], "lluvia_total": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.62, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 30.19, 0.0, 0.0, 0.0, 0.0, 0.0, 33.66, 0.0, 0.0, 0.0, 0.0, 20.72, 0.0, 0.0, 0.0, 0.0, 0.0, 45.14, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43.62, 0.0, 20.15, 0.0, 0.0], "radiacion_max": [936.71, 795.53, 934.36, 969.72, 761.29, 977.36, 973.87, 964.13, 966.7, 946.72, 969.85, 977.29, 967.44, 964.65, 933.51, 966.14, 963.5, 971.28, 970.83, 934.02, 941.28, 972.75, 970.65, 970.98, 964.05, 730.71, 972.06, 967.87, 969.57, 971.09, 950.44, 685.75, 971.36, 951.72, 965.13, 962.05, 838.9, 973.53, 966.14, 971.99, 971.02, 964.51, 700.62, 971.17, 973.72, 970.34, 963.87, 970.62, 970.15, 968.99, 936.36, 968.15, 968.98, 969.68, 973.53, 645.28, 970.79, 806.16, 950.14, 970.79]}};
+
+const MODULOS_METRICAS = {
+  lluvia: {cols:["Modelo","Exactitud","Precisión","Sensibilidad","F1"], best:"Random Forest", rows:[
+    ["Regresión Logística","0.947","0.346","0.818","0.486"],
+    ["Random Forest","0.980","0.700","0.636","0.667"],
+    ["Gradient Boosting","0.972","0.600","0.273","0.375"],
+  ]},
+  fv: {cols:["Modelo","RMSE (kW)","MAE (kW)","R²"], best:"Random Forest", rows:[
+    ["Regresión Lineal (referencia)","0.0154","0.0094","0.9966"],
+    ["Random Forest","0.0113","0.0055","0.9982"],
+    ["Gradient Boosting","0.0119","0.0059","0.9980"],
+  ]},
+  heladas: {cols:["Método","Exactitud","Precisión","Sensibilidad","F1"], best:"Regresión Logística (IA)", rows:[
+    ["Regresión Logística (IA)","0.533","0.286","0.500","0.364"],
+    ["Regla física simple (sin IA)","0.733","0.000","0.000","0.000"],
+  ]},
+};
+
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function fmtFecha(iso){
+  const d = new Date(iso);
+  return d.toLocaleString('es-CO', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+}
+
+// --- Núcleo de cálculo: idéntico al usado en la versión anterior del
+// panel (mismas fórmulas), documentado aquí con las reglas explícitas. ---
+function calcularAnalisis(historial){
+  if(!historial || historial.length===0) return null;
+  const ultimo = historial[historial.length-1];
+  const idx = Math.max(0, historial.length-4);
+  const anterior = historial[idx];
+  const deltaP = ultimo.presion_hpa - anterior.presion_hpa;
+  const probLluvia = clamp((ultimo.humedad_pct-40)/60*60 + Math.max(0,-deltaP)*8, 0, 100);
+  const hora = new Date(ultimo.fecha).getHours();
+  const esNoche = (hora>=21 || hora<=7);
+  let riesgoHelada = 'bajo';
+  if(ultimo.temp_c < 0) riesgoHelada = 'alto';
+  else if(esNoche && ultimo.temp_c < 5) riesgoHelada = 'medio';
+  const tCelda = ultimo.temp_c + (45-20)/800*ultimo.radiacion_wm2;
+  const pvKw = Math.max(0, 1.0*(ultimo.radiacion_wm2/1000)*(1+(-0.004)*(tCelda-25)));
+  return {ultimo, probLluvia, riesgoHelada, pvKw, hora};
+}
+
+// --- Traducción a lenguaje llano + ventana horaria probable (contexto
+// climatológico general del altiplano boyacense, no un pronóstico puntual). ---
+function textoVentanaLluvia(hora, prob){
+  if(hora < 12){
+    return prob>=25
+      ? 'Si llueve hoy, lo más probable es que sea en la tarde, entre la <strong>1:00 p.m. y las 6:00 p.m.</strong> (patrón típico de lluvia de convección en el altiplano).'
+      : 'Por ahora no hay señales fuertes de lluvia; si cambia, la franja más probable seguiría siendo la tarde (1:00 p.m.–6:00 p.m.).';
+  }
+  if(hora >= 12 && hora < 18){
+    return 'Estás dentro de la franja en que suele llover en el altiplano (<strong>hasta las 6:00 p.m.</strong> aprox.). Si no ha llovido todavía, aún podría hacerlo en las próximas horas.';
+  }
+  return 'Ya pasó la franja típica de lluvia de la tarde; para lo que resta del día es <strong>menos probable</strong> que llueva. La próxima ventana esperable sería mañana en la tarde.';
+}
+function textoVentanaHelada(hora, riesgo){
+  if(hora>=18 || hora<3){
+    return riesgo==='bajo'
+      ? 'Con la lectura actual el riesgo es bajo, pero la ventana de mayor enfriamiento de la noche llega entre las <strong>3:00 a.m. y las 6:00 a.m.</strong>'
+      : 'La ventana de <strong>mayor riesgo</strong> será esta madrugada, entre las 3:00 a.m. y las 6:00 a.m., cuando el enfriamiento nocturno es más fuerte.';
+  }
+  if(hora>=3 && hora<7){
+    return 'Estás dentro de la franja de <strong>mayor riesgo de helada</strong> (3:00 a.m.–6:00 a.m.).';
+  }
+  return 'De día el riesgo de helada es mínimo; la próxima evaluación importante es para la madrugada siguiente (3:00 a.m.–6:00 a.m.).';
+}
+function textoFv(pvKw, hora){
+  const pct = clamp(pvKw/1.0*100, 0, 999);
+  if(pvKw <= 0.02){
+    return (hora>=18 || hora<6)
+      ? 'Es de noche: no hay generación solar en este momento.'
+      : 'Prácticamente sin generación ahora mismo (probablemente muy nublado).';
+  }
+  return `Ahora mismo el sol alcanza para generar cerca del <strong>${pct.toFixed(0)}%</strong> de la capacidad de un sistema solar de 1 kWp (tamaño típico de vivienda rural). El ciclo diario típico de la zona alcanza su máximo hacia el mediodía (ver panel ilustrativo).`;
+}
+
+let charts = {};
+function crearSpark(id, color){
+  const ctx = document.getElementById(id);
+  return new Chart(ctx, {
+    type:'line',
+    data:{ labels:[], datasets:[{ data:[], borderColor:color, borderWidth:2, pointRadius:0, tension:.35, fill:false }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, resizeDelay:100,
+      scales:{ x:{display:false}, y:{display:false} },
+      plugins:{ legend:{display:false}, tooltip:{enabled:false} },
+    }
+  });
+}
+function getVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888'; }
+
+function initSparks(){
+  charts.temp = crearSpark('spTemp', getVar('--brand'));
+  charts.hum = crearSpark('spHum', getVar('--rain'));
+  charts.pres = crearSpark('spPres', getVar('--ink-dim'));
+  charts.rad = crearSpark('spRad', getVar('--sun'));
+  charts.pv = crearSpark('spPv', getVar('--ok'));
+}
+
+function actualizarSparks(historial){
+  const labels = historial.map(h=>h.fecha);
+  const set = (chart, arr) => { chart.data.labels = labels; chart.data.datasets[0].data = arr; chart.update('none'); };
+  set(charts.temp, historial.map(h=>h.temp_c));
+  set(charts.hum, historial.map(h=>h.humedad_pct));
+  set(charts.pres, historial.map(h=>h.presion_hpa));
+  set(charts.rad, historial.map(h=>h.radiacion_wm2));
+  set(charts.pv, historial.map(h=>{
+    const tCelda = h.temp_c + (45-20)/800*h.radiacion_wm2;
+    return Math.max(0, 1.0*(h.radiacion_wm2/1000)*(1+(-0.004)*(tCelda-25)));
+  }));
+}
+
+function render(historial, meta){
+  const analisis = calcularAnalisis(historial);
+  if(!analisis) return;
+  const {ultimo, probLluvia, riesgoHelada, pvKw, hora} = analisis;
+  const pctFv = clamp(pvKw/1.0*100, 0, 100);
+
+  // --- tarjetas de sensores ---
+  document.getElementById('vTemp').innerHTML = ultimo.temp_c.toFixed(1)+'<small>°C</small>';
+  document.getElementById('vHum').innerHTML = ultimo.humedad_pct.toFixed(0)+'<small>%</small>';
+  document.getElementById('vPres').innerHTML = ultimo.presion_hpa.toFixed(1)+'<small>hPa</small>';
+  document.getElementById('vRad').innerHTML = ultimo.radiacion_wm2.toFixed(0)+'<small>W/m²</small>';
+  document.getElementById('vPv').innerHTML = pvKw.toFixed(2)+'<small>kW</small>';
+
+  // --- módulos técnicos (valores crudos) ---
+  document.getElementById('valLluvia').textContent = Math.round(probLluvia)+'%';
+  document.getElementById('valHelada').textContent = riesgoHelada.toUpperCase();
+  document.getElementById('valFv').textContent = pvKw.toFixed(2)+' kW';
+
+  // --- respuestas en lenguaje llano ---
+  const bLluvia = document.getElementById('badgeLluvia');
+  const respLluvia = document.getElementById('respLluvia');
+  if(probLluvia>=55){ respLluvia.textContent='Sí, es probable'; bLluvia.textContent='PROBABLE'; bLluvia.className='badge info'; }
+  else if(probLluvia>=25){ respLluvia.textContent='Posible, hay que estar pendiente'; bLluvia.textContent='POSIBLE'; bLluvia.className='badge warn'; }
+  else { respLluvia.textContent='No es probable'; bLluvia.textContent='IMPROBABLE'; bLluvia.className='badge ok'; }
+  document.getElementById('meterLluvia').style.width = probLluvia.toFixed(0)+'%';
+  document.getElementById('ventanaLluvia').innerHTML = textoVentanaLluvia(hora, probLluvia) + ` <span class="mono" style="color:var(--ink-dim);font-size:11.5px;">(${Math.round(probLluvia)}% estimado)</span>`;
+
+  const bHelada = document.getElementById('badgeHelada');
+  const respHelada = document.getElementById('respHelada');
+  if(riesgoHelada==='alto'){ respHelada.textContent='Sí, alerta'; bHelada.textContent='ALERTA'; bHelada.className='badge danger'; }
+  else if(riesgoHelada==='medio'){ respHelada.textContent='Posible, vigilar'; bHelada.textContent='VIGILAR'; bHelada.className='badge warn'; }
+  else { respHelada.textContent='Sin riesgo por ahora'; bHelada.textContent='TRANQUILO'; bHelada.className='badge ok'; }
+  const meterHelada = { alto:95, medio:55, bajo:12 }[riesgoHelada];
+  document.getElementById('meterHelada').style.width = meterHelada+'%';
+  document.getElementById('ventanaHelada').innerHTML = textoVentanaHelada(hora, riesgoHelada);
+
+  const bFv = document.getElementById('badgeFv');
+  const respFv = document.getElementById('respFv');
+  respFv.textContent = pvKw.toFixed(2)+' kW ahora';
+  bFv.textContent = pctFv>60?'GENERANDO BIEN':(pctFv>5?'GENERANDO':'SIN SOL');
+  bFv.className = 'badge ' + (pctFv>60?'warn':(pctFv>5?'info':'ok'));
+  document.getElementById('meterFv').style.width = pctFv.toFixed(0)+'%';
+  document.getElementById('ventanaFv').innerHTML = textoFv(pvKw, hora);
+
+  // --- recomendaciones ---
+  document.getElementById('recoRiego').textContent = probLluvia>=55
+    ? 'Es probable que llueva en la tarde: puedes esperar antes de regar y ahorrar agua.'
+    : (riesgoHelada!=='bajo'
+        ? 'Si vas a regar, hazlo temprano en la mañana; el riego por aspersión durante la helada misma (no antes) es la técnica que protege por calor de congelación.'
+        : 'Sin señales fuertes de lluvia ni de helada: riega según el plan normal del cultivo.');
+  document.getElementById('recoCultivo').textContent = riesgoHelada!=='bajo'
+    ? 'Cubre plántulas y cultivos sensibles (hortalizas, papa recién sembrada) con plástico o agrotela antes del atardecer.'
+    : (probLluvia>=55
+        ? 'Si hay cultivos recién fumigados o abonados, considera que la lluvia de la tarde puede lavar el producto.'
+        : 'No se esperan condiciones extremas con la lectura actual; monitoreo normal.');
+  document.getElementById('recoEnergia').textContent = pctFv>40
+    ? 'Buen momento para tareas que consuman energía (bombeo de agua, carga de baterías) si tienes paneles solares.'
+    : 'Poca generación solar en este momento; si dependes de paneles, prioriza el consumo entre las 10 a.m. y las 2 p.m., cuando el ciclo típico de la zona alcanza su máximo.';
+
+  if(charts.temp) actualizarSparks(historial);
+
+  const activa = (Date.now() - new Date(ultimo.fecha).getTime()) < 2*3600*1000;
+  document.getElementById('statusDot').className = 'dot ' + (activa?'on':'off');
+  document.getElementById('statusText').textContent = activa ? 'Estación conectada' : 'Estación desconectada';
+  document.getElementById('statusMeta').textContent = 'Última lectura real: ' + fmtFecha(ultimo.fecha) +
+    (meta && meta.ultima_revision ? ' · última revisión: ' + fmtFecha(meta.ultima_revision) : '');
+  document.getElementById('fuenteTag').textContent = activa ? 'estación WS-2902 — en vivo' : 'estación WS-2902 — última lectura disponible';
+}
+
+function initIllustrativeCharts(){
+  const p = SIM.perfil_horario;
+  new Chart(document.getElementById('chartPerfil'), {
+    type:'line',
+    data:{ labels:p.hora.map(h=>h+':00'), datasets:[
+      {label:'Temperatura (°C)', data:p.temp_c, borderColor:getVar('--brand'), backgroundColor:'transparent', tension:.35, pointRadius:0, yAxisID:'y'},
+      {label:'Humedad (%)', data:p.humedad_pct, borderColor:getVar('--rain'), backgroundColor:'transparent', tension:.35, pointRadius:0, yAxisID:'y1'},
+      {label:'Radiación (W/m²)', data:p.radiacion_wm2, borderColor:getVar('--sun'), backgroundColor:'transparent', tension:.35, pointRadius:0, yAxisID:'y2'},
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, resizeDelay:100,
+      interaction:{mode:'index', intersect:false},
+      scales:{
+        x:{ ticks:{color:getVar('--ink-dim'), maxTicksLimit:8}, grid:{color:getVar('--border')} },
+        y:{ position:'left', ticks:{color:getVar('--brand')}, grid:{color:getVar('--border')}, title:{display:true,text:'°C', color:getVar('--ink-dim')} },
+        y1:{ position:'right', ticks:{color:getVar('--rain')}, grid:{display:false}, title:{display:true,text:'%', color:getVar('--ink-dim')} },
+        y2:{ display:false },
+      },
+      plugins:{ legend:{position:'bottom', labels:{color:getVar('--ink'), boxWidth:12, font:{size:11}}} }
+    }
+  });
+
+  const d = SIM.serie_diaria;
+  new Chart(document.getElementById('chartDiario'), {
+    data:{ labels:d.dia.map(x=>x.slice(5)), datasets:[
+      {type:'bar', label:'Lluvia (mm/día)', data:d.lluvia_total, backgroundColor:getVar('--rain'), yAxisID:'y1', order:2, borderRadius:3},
+      {type:'line', label:'Temp. máx (°C)', data:d.temp_max, borderColor:getVar('--sun'), backgroundColor:'transparent', pointRadius:0, tension:.3, yAxisID:'y', order:1},
+      {type:'line', label:'Temp. mín (°C)', data:d.temp_min, borderColor:getVar('--frost'), backgroundColor:'transparent', pointRadius:0, tension:.3, yAxisID:'y', order:1, borderDash:[4,3]},
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false, resizeDelay:100,
+      scales:{
+        x:{ ticks:{color:getVar('--ink-dim'), maxTicksLimit:10}, grid:{display:false} },
+        y:{ position:'left', ticks:{color:getVar('--ink-dim')}, grid:{color:getVar('--border')}, title:{display:true,text:'°C', color:getVar('--ink-dim')} },
+        y1:{ position:'right', ticks:{color:getVar('--rain')}, grid:{display:false}, title:{display:true,text:'mm', color:getVar('--ink-dim')} },
+      },
+      plugins:{ legend:{position:'bottom', labels:{color:getVar('--ink'), boxWidth:12, font:{size:11}}} }
+    }
+  });
+}
+
+function renderTablaMetricas(){
+  const el = document.getElementById('tablaMetricas');
+  const secciones = [
+    ['Módulo 1 — Clasificación de lluvia', MODULOS_METRICAS.lluvia],
+    ['Módulo 2 — Regresión fotovoltaica', MODULOS_METRICAS.fv],
+    ['Módulo 3 — Alerta de heladas', MODULOS_METRICAS.heladas],
+  ];
+  let html = '';
+  secciones.forEach(([titulo, m])=>{
+    html += `<thead><tr><th colspan="${m.cols.length}" style="padding-top:16px;color:var(--ink);font-size:13px;">${titulo}</th></tr>`;
+    html += '<tr>'+m.cols.map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>';
+    m.rows.forEach(r=>{
+      const esBest = r[0]===m.best;
+      html += `<tr class="${esBest?'best':''}">` + r.map((v,i)=>`<td class="${i>0?'mono':''}">${v}</td>`).join('') + '</tr>';
+    });
+    html += '</tbody>';
+  });
+  el.innerHTML = html;
+}
+
+function pintarFechaHoy(){
+  const el = document.getElementById('fechaHoy');
+  const hoy = new Date();
+  el.textContent = hoy.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+
+// Sitio estático (GitHub Pages, sin backend): el propio navegador de quien
+// mira la página llama DIRECTO a la API de AmbientWeather (no hay servidor
+// intermedio, no hay tarea programada, no depende de nada externo). Por eso
+// funciona igual de "en vivo" estando en GitHub que en cualquier otro lado.
+//
+// OJO seguridad: como no hay backend, estas llaves quedan visibles para
+// cualquiera que vea el código fuente de la página. Son de solo-lectura de
+// ESTA estación (no permiten controlar nada ni ver otras cuentas), así que
+// el riesgo real es bajo, pero es bueno saberlo.
+const AMBIENT_API_KEY = 'c271fa0189914f749bd5fa441ca604f03e2a8316b3374b24992f16b36cbe5328';
+const AMBIENT_APP_KEY = '36258202a32147c4a872c5ee756b9707f9066bebc2574e1c8a38a015211cdc84';
+const AMBIENT_MAC = '8C:4F:00:4F:8B:95';
+const INTERVALO_MS = 5 * 60 * 1000; // la estación reporta cada 5 min como máximo
+
+function convertirRegistroApi(r){
+  // r trae unidades imperiales (°F, inHg, in/hr); la página trabaja en métrico.
+  const fechaUtc = new Date(r.date);
+  const fechaLocal = new Date(fechaUtc.getTime() - 5*3600*1000); // Bogotá = UTC-5 fijo
+  const iso = fechaLocal.toISOString().slice(0,19);
+  return {
+    fecha: iso,
+    temp_c: Math.round(((r.tempf-32)*5/9)*100)/100,
+    humedad_pct: r.humidity,
+    presion_hpa: Math.round(r.baromrelin*33.8639*100)/100,
+    radiacion_wm2: r.solarradiation ?? 0,
+    lluvia_mm_hr: Math.round((r.hourlyrainin||0)*25.4*100)/100,
+  };
+}
+
+let ultimoFetchOk = null;
+async function cargarDatos(){
+  const url = `https://api.ambientweather.net/v1/devices/${AMBIENT_MAC}?apiKey=${AMBIENT_API_KEY}&applicationKey=${AMBIENT_APP_KEY}&limit=50`;
+  try{
+    const resp = await fetch(url);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const arr = await resp.json();
+    if(Array.isArray(arr) && arr.length){
+      const historial = arr.map(convertirRegistroApi).sort((a,b)=> a.fecha < b.fecha ? -1 : 1);
+      render(historial, {ultima_revision: new Date().toISOString()});
+      ultimoFetchOk = true;
+    }
+  }catch(e){
+    // Típicamente CORS (si AmbientWeather no permite llamadas desde el navegador)
+    // o la estación sin internet. En ambos casos seguimos mostrando REAL_SEED.
+    if(ultimoFetchOk !== false) console.warn('No se pudo consultar la API de AmbientWeather desde el navegador; se muestran los últimos datos conocidos.', e);
+    ultimoFetchOk = false;
+  }
+}
+
+async function boot(){
+  pintarFechaHoy();
+  // Texto y badges no dependen de Chart.js: se pintan primero para que la
+  // página muestre datos reales aunque la librería de gráficas falle en cargar.
+  try{ renderTablaMetricas(); }catch(e){ console.warn('tabla', e); }
+  try{ render(REAL_SEED, {ultima_revision:null}); }catch(e){ console.warn('render inicial', e); }
+
+  if(window.Chart){
+    try{ initSparks(); actualizarSparks(REAL_SEED); }catch(e){ console.warn('sparks', e); }
+    try{ initIllustrativeCharts(); }catch(e){ console.warn('charts ilustrativos', e); }
+  } else {
+    console.warn('Chart.js no cargó; se muestran valores sin gráficas.');
+  }
+
+  await cargarDatos();
+  setInterval(cargarDatos, INTERVALO_MS);
+}
+
+boot();
+</script>
+</body>
+</html>
