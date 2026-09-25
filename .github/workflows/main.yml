@@ -1,0 +1,45 @@
+name: Actualizar datos y modelos
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      backfill_dias:
+        description: 'Días hacia atrás a descargar (solo la primera vez)'
+        required: false
+        default: '0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-datos
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Ciclo de retroalimentación
+        env:
+          AMBIENT_API_KEY: ${{ secrets.AMBIENT_API_KEY }}
+          AMBIENT_APP_KEY: ${{ secrets.AMBIENT_APP_KEY }}
+          AMBIENT_MAC: ${{ secrets.AMBIENT_MAC }}
+        run: python scripts/actualizar.py --backfill-dias "${{ github.event.inputs.backfill_dias || '0' }}"
+      - name: Publicar cambios
+        run: |
+          git config user.name  "aurea-bot"
+          git config user.email "aurea-bot@users.noreply.github.com"
+          if git diff --quiet -- data/observaciones.csv; then
+            echo "Sin lecturas nuevas"; git checkout -- data/
+          else
+            git add data/
+            git commit -m "datos: actualización automática $(date -u +'%Y-%m-%dT%H:%MZ')"
+            git push
+          fi
