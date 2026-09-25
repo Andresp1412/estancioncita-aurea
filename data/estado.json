@@ -1,0 +1,226 @@
+{
+ "generado_utc": "2026-09-25T22:46:49.912783+00:00",
+ "fuente": "fixture:api_fixture_2026-08-26.json",
+ "lecturas_nuevas": 12,
+ "estacion": {
+  "nombre": "Estancioncita Aurea · WS-2902",
+  "lat": 5.8277,
+  "lon": -73.0251,
+  "alt_m": 2590
+ },
+ "ultima_lectura": {
+  "T": 20.39,
+  "RH": 50.0,
+  "P": 1013.51,
+  "G": 1.17,
+  "rain_rate": 0.0,
+  "rain_day": 0.0,
+  "wind": 0.0,
+  "gust": 0.0,
+  "uv": 0.0,
+  "Tin": 21.0,
+  "t_utc": "2026-08-26T21:55:00+00:00",
+  "wind_dir": 358,
+  "qc": [],
+  "pv_kw": 0.0012
+ },
+ "serie_24h": {
+  "t": [
+   1787767260000,
+   1787767560000,
+   1787767800000,
+   1787768100000,
+   1787768400000,
+   1787779620000,
+   1787779800000,
+   1787780160000,
+   1787780520000,
+   1787780700000,
+   1787781000000,
+   1787781300000
+  ],
+  "T": [
+   22.0,
+   21.5,
+   21.0,
+   20.8,
+   21.9,
+   20.5,
+   20.6,
+   20.6,
+   20.6,
+   20.5,
+   20.5,
+   20.4
+  ],
+  "RH": [
+   46.0,
+   48.0,
+   48.0,
+   53.0,
+   46.0,
+   50.0,
+   49.0,
+   50.0,
+   50.0,
+   50.0,
+   49.0,
+   50.0
+  ],
+  "P": [
+   1012.9,
+   1012.5,
+   1012.6,
+   1012.4,
+   1012.4,
+   1013.2,
+   1013.5,
+   1013.2,
+   1013.3,
+   1013.4,
+   1013.2,
+   1013.5
+  ],
+  "G": [
+   195.0,
+   259.0,
+   294.0,
+   312.0,
+   346.0,
+   1.0,
+   2.0,
+   1.0,
+   1.0,
+   1.0,
+   2.0,
+   1.0
+  ],
+  "rain": [
+   0.0,
+   22.9,
+   33.5,
+   33.5,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "wind": [
+   1.1,
+   3.6,
+   5.0,
+   0.4,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "uv": [
+   1,
+   2,
+   2,
+   3,
+   3,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "ok": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1
+  ]
+ },
+ "qc_24h": {
+  "lecturas": 12,
+  "validas": 6,
+  "fuera_de_rango": 0,
+  "posible_interior": 6,
+  "lluvia_sin_humedad": 3,
+  "reinicio_contador": 1,
+  "hueco_previo": 1
+ },
+ "prediccion_actual": {
+  "hora": "2026-08-26T16:00:00-05:00",
+  "motivo": "Se requieren 4 horas consecutivas de datos válidos; faltan datos en 4 de las últimas 4."
+ },
+ "verificacion": {
+  "total": {
+   "lluvia": {
+    "n": 0,
+    "vp": 0,
+    "fp": 0,
+    "fn": 0,
+    "vn": 0,
+    "precision": null,
+    "sensibilidad": null,
+    "f1": null,
+    "brier": null
+   },
+   "fv": {
+    "n": 0,
+    "mae": null,
+    "rmse": null,
+    "rmse_persistencia": null
+   }
+  },
+  "ultimos_7_dias": {
+   "lluvia": {
+    "n": 0,
+    "vp": 0,
+    "fp": 0,
+    "fn": 0,
+    "vn": 0,
+    "precision": null,
+    "sensibilidad": null,
+    "f1": null,
+    "brier": null
+   },
+   "fv": {
+    "n": 0,
+    "mae": null,
+    "rmse": null,
+    "rmse_persistencia": null
+   }
+  },
+  "recientes": [],
+  "pendientes": 0
+ },
+ "modelo": {
+  "lluvia": {
+   "version": "1.0",
+   "actualizaciones": 0,
+   "umbral": 0.61,
+   "deriva": 0.0
+  },
+  "fv": {
+   "version": "1.0",
+   "correccion_a": 0.0,
+   "correccion_b": 1.0,
+   "actualizaciones": 0
+  }
+ },
+ "total_observaciones": 12,
+ "total_predicciones": 0
+}

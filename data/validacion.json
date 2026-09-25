@@ -1,0 +1,85 @@
+{
+ "periodo_prueba": [
+  "2026-01-01 00:00:00",
+  "2026-08-31 20:00:00"
+ ],
+ "n_horas": 5829,
+ "prevalencia_lluvia": 0.2784354091610911,
+ "umbral_modelo": 0.61,
+ "lluvia": {
+  "Regla anterior de la web (≥ 25 %)": {
+   "vp": 1181,
+   "fp": 2622,
+   "fn": 442,
+   "vn": 1584,
+   "exactitud": 0.47435237605078057,
+   "precision": 0.3105443071259532,
+   "sensibilidad": 0.7276648182378311,
+   "f1": 0.43531146332473275,
+   "csi": 0.27820965842167256,
+   "auc": 0.5725714138385765
+  },
+  "Persistencia (llueve ahora)": {
+   "vp": 605,
+   "fp": 164,
+   "fn": 1018,
+   "vn": 4042,
+   "exactitud": 0.7972207925887802,
+   "precision": 0.7867360208062418,
+   "sensibilidad": 0.37276648182378314,
+   "f1": 0.5058528428093646,
+   "csi": 0.33855623950755453
+  },
+  "Regresión logística (modelo de la web)": {
+   "vp": 945,
+   "fp": 453,
+   "fn": 678,
+   "vn": 3753,
+   "exactitud": 0.8059701492537313,
+   "precision": 0.6759656652360515,
+   "sensibilidad": 0.5822550831792976,
+   "f1": 0.6256206554121152,
+   "csi": 0.4552023121387283,
+   "auc": 0.8352091560658146
+  },
+  "Regresión logística + aprendizaje en línea": {
+   "vp": 1123,
+   "fp": 770,
+   "fn": 500,
+   "vn": 3436,
+   "exactitud": 0.7821238634414136,
+   "precision": 0.5932382461701003,
+   "sensibilidad": 0.6919285274183611,
+   "f1": 0.6387940841865757,
+   "csi": 0.46928541579607186,
+   "auc": 0.8431076808678386
+  }
+ },
+ "fv": {
+  "Persistencia": {
+   "rmse": 0.1420908769692899,
+   "mae": 0.11725985913065842,
+   "r2": 0.7243877266060725
+  },
+  "Climatología mes-hora": {
+   "rmse": 0.10382864689806268,
+   "mae": 0.07303464445837828,
+   "r2": 0.8528363493833694
+  },
+  "Gradient Boosting (modelo de la web)": {
+   "rmse": 0.06158186833654722,
+   "mae": 0.0433505836591221,
+   "r2": 0.9482307485097692
+  },
+  "n_horas_diurnas": 2916,
+  "mejora_vs_persistencia_pct": 56.66022361882044,
+  "mejora_vs_climatologia_pct": 40.68894262196508
+ },
+ "heladas": {
+  "dias": 974,
+  "tmin_absoluta": 5.9,
+  "horas_bajo_0": 0,
+  "horas_bajo_5": 0
+ },
+ "fuente": "https://archive-api.open-meteo.com/v1/archive?latitude=5.8277&longitude=-73.0251&start_date=2024-01-01&end_date=2026-08-31&hourly=temperature_2m,relative_humidity_2m,pressure_msl,shortwave_radiation,precipitation&timezone=America%2FBogota"
+}
