@@ -1,7 +1,7 @@
 {
- "generado_utc": "2026-09-25T22:46:49.912783+00:00",
- "fuente": "fixture:api_fixture_2026-08-26.json",
- "lecturas_nuevas": 12,
+ "generado_utc": "2026-09-25T23:24:32.246124+00:00",
+ "fuente": "api.ambientweather.net",
+ "lecturas_nuevas": 0,
  "estacion": {
   "nombre": "Estancioncita Aurea · WS-2902",
   "lat": 5.8277,
@@ -20,7 +20,7 @@
   "uv": 0.0,
   "Tin": 21.0,
   "t_utc": "2026-08-26T21:55:00+00:00",
-  "wind_dir": 358,
+  "wind_dir": 358.0,
   "qc": [],
   "pv_kw": 0.0012
  },
@@ -124,18 +124,18 @@
    0.0
   ],
   "uv": [
-   1,
-   2,
-   2,
-   3,
-   3,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
+   1.0,
+   2.0,
+   2.0,
+   3.0,
+   3.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
   ],
   "ok": [
    1,
