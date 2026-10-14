@@ -1,1 +1,2 @@
 hora,version,p_lluvia,banda,pv_hat,pv_corr,pv_persist,y_lluvia,pv_real,estado_lluvia,estado_fv
+2026-10-13T19:00:00-05:00,1.0+0,0.8577,PROBABLE,0.0,0.0,0.001,,,pendiente,pendiente
