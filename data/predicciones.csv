@@ -117,6 +117,11 @@ hora,version,p_lluvia,banda,pv_hat,pv_corr,pv_persist,y_lluvia,pv_real,estado_ll
 2026-10-18T15:00:00-05:00,1.0+109,0.5131,POSIBLE,0.3176,0.2868,0.4582,0,0.3095,verificada,verificada
 2026-10-18T16:00:00-05:00,1.0+110,0.3972,POSIBLE,0.1636,0.1371,0.3095,0,0.0724,verificada,verificada
 2026-10-18T17:00:00-05:00,1.0+111,0.3807,POSIBLE,0.0066,0.0,0.0724,0,0.0054,verificada,verificada
-2026-10-18T18:00:00-05:00,1.0+112,0.3345,IMPROBABLE,0.0,0.0,0.0054,,0.0,pendiente,verificada
-2026-10-18T19:00:00-05:00,1.0+113,0.2653,IMPROBABLE,0.0,0.0,0.0,,0.0,pendiente,verificada
-2026-10-18T20:00:00-05:00,1.0+114,0.1139,IMPROBABLE,0.0,0.0,0.0,,,pendiente,pendiente
+2026-10-18T18:00:00-05:00,1.0+112,0.3345,IMPROBABLE,0.0,0.0,0.0054,0,0.0,verificada,verificada
+2026-10-18T19:00:00-05:00,1.0+113,0.2653,IMPROBABLE,0.0,0.0,0.0,0,0.0,verificada,verificada
+2026-10-18T20:00:00-05:00,1.0+114,0.1139,IMPROBABLE,0.0,0.0,0.0,0,0.0,verificada,verificada
+2026-10-18T21:00:00-05:00,1.0+115,0.0609,IMPROBABLE,0.0,0.0,0.0,0,0.0,verificada,verificada
+2026-10-18T22:00:00-05:00,1.0+116,0.0362,IMPROBABLE,0.0,0.0,0.0,0,0.0,verificada,verificada
+2026-10-18T23:00:00-05:00,1.0+117,0.0526,IMPROBABLE,0.0,0.0,0.0,,0.0,pendiente,verificada
+2026-10-19T00:00:00-05:00,1.0+118,0.0559,IMPROBABLE,0.0,0.0,0.0,,0.0,pendiente,verificada
+2026-10-19T01:00:00-05:00,1.0+119,0.0382,IMPROBABLE,0.0002,0.0,0.0,,,pendiente,pendiente
