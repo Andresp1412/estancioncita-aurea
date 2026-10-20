@@ -139,6 +139,8 @@ hora,version,p_lluvia,banda,pv_hat,pv_corr,pv_persist,y_lluvia,pv_real,estado_ll
 2026-10-19T13:00:00-05:00,1.0+131,0.3503,POSIBLE,0.6687,0.6408,0.8038,0,0.3646,verificada,verificada
 2026-10-19T14:00:00-05:00,1.0+132,0.5788,POSIBLE,0.408,0.3846,0.3646,0,0.104,verificada,verificada
 2026-10-19T15:00:00-05:00,1.0+133,0.6459,POSIBLE,0.189,0.1625,0.104,0,0.0494,verificada,verificada
-2026-10-19T16:00:00-05:00,1.0+134,0.369,POSIBLE,0.071,0.0437,0.0494,,0.0311,pendiente,verificada
-2026-10-19T17:00:00-05:00,1.0+135,0.6307,POSIBLE,0.0093,0.0,0.0311,,0.0055,pendiente,verificada
-2026-10-19T18:00:00-05:00,1.0+136,0.4605,POSIBLE,0.0,0.0,0.0055,,,pendiente,pendiente
+2026-10-19T16:00:00-05:00,1.0+134,0.369,POSIBLE,0.071,0.0437,0.0494,0,0.0311,verificada,verificada
+2026-10-19T17:00:00-05:00,1.0+135,0.6307,POSIBLE,0.0093,0.0,0.0311,0,0.0055,verificada,verificada
+2026-10-19T18:00:00-05:00,1.0+136,0.4605,POSIBLE,0.0,0.0,0.0055,,0.0,pendiente,verificada
+2026-10-19T19:00:00-05:00,1.0+137,0.469,POSIBLE,0.0,0.0,0.0,,0.0,pendiente,verificada
+2026-10-19T20:00:00-05:00,1.0+138,0.5221,POSIBLE,0.0,0.0,0.0,,,pendiente,pendiente
